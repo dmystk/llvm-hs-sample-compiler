@@ -2,7 +2,10 @@ module Main where
 
 import System.IO
 import System.Environment
-import qualified Data.Text.Lazy.IO as LT
+import LLVM.Analysis
+import LLVM.Context
+import LLVM.Module
+import LLVM.Target
 
 import Parser
 import Compiler
@@ -13,8 +16,12 @@ main = do
   let srcPath = head args
   src <- readFile srcPath
 
-  let distPath = srcPath ++ ".ll"
+  let distPath = srcPath ++ ".o"
   let result = compile <$> parse src
   case result of
-    Right ir -> LT.writeFile distPath ir
+    Right mod -> withContext $ \ctx ->
+      withModuleFromAST ctx mod $ \mod' -> do
+        verify mod'
+        withHostTargetMachineDefault $ \target ->
+          writeObjectToFile target (File distPath) mod'
     Left err -> print err

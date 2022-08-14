@@ -5,10 +5,8 @@ module Compiler
 
 import AST
 
-import Data.Text.Lazy
 import Data.Functor.Identity
 
-import LLVM.Pretty
 import LLVM.AST hiding (function)
 import LLVM.AST.Type
 import LLVM.IRBuilder
@@ -16,8 +14,8 @@ import LLVM.IRBuilder
 
 type LLVMBuilder = IRBuilderT (ModuleBuilderT Identity)
 
-compile :: Expr -> Text
-compile expr = ppllvm $ buildModule "main" $ do
+compile :: Expr -> Module
+compile expr = buildModule "main" $ do
     printf <- externVarArgs "printf" [ptr i8] i32
     format <- globalStringPtr "%d\n" "format"
     function "main" [] i32 $ \[] -> do
