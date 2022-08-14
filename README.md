@@ -20,6 +20,7 @@ For details about the expression, see the below BNF.
 ## Building
 
 ```shell
+$ brew install llvm@9
 $ stack build
 ```
 
@@ -31,9 +32,10 @@ You can try a sample code by the following command:
 $ stack run -- ./example/example.src
 ```
 
-The abobe command outputs `./example/example.src.ll`.
-For executing it, you need to install LLVM.
+The abobe command outputs `./example/example.src.o`.
+The below commands link the object file and execute the result.
 
 ```shell
-$ lli ./example/example.src.ll
+$ ld -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib -lSystem ./example/example.src.o
+$ ./a.out
 ```
